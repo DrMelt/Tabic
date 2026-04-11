@@ -1,0 +1,163 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Tabic.ViewModels"
+             xmlns:models="using:Tabic.Models"
+             xmlns:components="using:Tabic.Views.Components"
+             x:Class="Tabic.Views.Components.TimelineTable"
+             x:DataType="vm:MainWindowViewModel"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch">
+
+    <Border BorderBrush="#E0E0E0"
+            BorderThickness="1"
+            Background="White"
+            CornerRadius="8"
+            BoxShadow="0 2 8 0 #20000000"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+        <LayoutTransformControl x:Name="ZoomTransformControl"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch">
+            <LayoutTransformControl.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}"/>
+            </LayoutTransformControl.LayoutTransform>
+            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,*" x:Name="MainGrid"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  Grid.IsSharedSizeScope="True">
+                <!-- 左上角固定单元格 -->
+                <Border Grid.Row="0" Grid.Column="0"
+                        Padding="12,8"
+                        CornerRadius="8,0,0,0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#667EEA"/>
+                            <GradientStop Offset="1" Color="#764BA2"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <TextBlock Text="时间点 \ 角色"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Foreground="White"
+                               FontSize="13"/>
+                </Border>
+
+                <!-- 横向表头（角色名）- 可水平滚动 -->
+                <ScrollViewer Grid.Row="0" Grid.Column="1"
+                              HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Disabled"
+                              x:Name="HeaderScrollViewer"
+                              HorizontalAlignment="Stretch">
+                    <ScrollViewer.Background>
+                        <SolidColorBrush Color="#667EEA"/>
+                    </ScrollViewer.Background>
+                    <ItemsControl x:Name="HeaderItemsControl" ItemsSource="{Binding Roles}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:Role">
+                                <Border Background="Transparent"
+                                        Padding="12,8"
+                                        Width="300">
+                                    <TextBlock Text="{Binding Name}"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Foreground="White"
+                                               FontSize="14"/>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- 纵向表头（时间点）- 可垂直滚动 -->
+                <ScrollViewer Grid.Row="1" Grid.Column="0"
+                              HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Hidden"
+                              x:Name="TimePointScrollViewer"
+                              Background="#F8F9FA"
+                              VerticalAlignment="Stretch">
+                    <ItemsControl x:Name="TimePointItemsControl" ItemsSource="{Binding TableRows}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:TableRowViewModel">
+                                <Border Background="Transparent"
+                                        Padding="12,8">
+                                    <TextBlock Text="{Binding TimePoint.Name}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Foreground="#555555"
+                                               FontSize="13"/>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- 内容区域 - 可双向滚动 -->
+                <ScrollViewer Grid.Row="1" Grid.Column="1"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto"
+                              x:Name="ContentScrollViewer"
+                              Background="White"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch">
+                    <ItemsControl x:Name="RowItemsControl" ItemsSource="{Binding TableRows}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:TableRowViewModel">
+                                <ItemsControl ItemsSource="{Binding Cells}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="vm:CellViewModel">
+                                            <Border Background="White"
+                                                    Padding="2"
+                                                    Width="300">
+                                                <Border Background="#FAFBFC"
+                                                        CornerRadius="4"
+                                                        Padding="4"
+                                                        BoxShadow="0 1 3 0 #10000000">
+                                                    <TextBox Text="{Binding Content}"
+                                                             BorderThickness="0"
+                                                             Background="Transparent"
+                                                             TextWrapping="Wrap"
+                                                             VerticalAlignment="Center"
+                                                             HorizontalAlignment="Center"
+                                                             FontSize="12"
+                                                             Foreground="#333333"
+                                                             PlaceholderText="输入内容..."
+                                                             AcceptsReturn="True"
+                                                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                             ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+                                                </Border>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </LayoutTransformControl>
+    </Border>
+
+</UserControl>

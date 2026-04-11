@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Tabic.ViewModels"
+             x:Class="Tabic.Views.Components.MenuBar"
+             x:DataType="vm:MainWindowViewModel">
+
+    <Menu Background="#F8F9FA" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
+        <MenuItem Header="文件">
+            <MenuItem Header="新建项目" Command="{Binding NewProjectCommand}" InputGesture="Ctrl+N"/>
+            <MenuItem Header="打开项目" Command="{Binding OpenProjectCommand}" InputGesture="Ctrl+O"/>
+            <MenuItem Header="保存项目" Command="{Binding SaveProjectCommand}" InputGesture="Ctrl+S"/>
+            <Separator/>
+            <MenuItem Header="导出为 JSON" Command="{Binding ExportJsonCommand}"/>
+            <MenuItem Header="从 JSON 导入" Command="{Binding ImportJsonCommand}"/>
+            <Separator/>
+            <MenuItem Header="退出" Command="{Binding ExitCommand}"/>
+        </MenuItem>
+        <MenuItem Header="编辑">
+            <MenuItem Header="添加角色" Command="{Binding AddRoleCommand}" InputGesture="Ctrl+R"/>
+            <MenuItem Header="添加时间点" Command="{Binding AddTimePointCommand}" InputGesture="Ctrl+T"/>
+            <Separator/>
+            <MenuItem Header="删除选中角色" Command="{Binding RemoveRoleCommand}"/>
+            <MenuItem Header="删除选中时间点" Command="{Binding RemoveTimePointCommand}"/>
+        </MenuItem>
+        <MenuItem Header="视图">
+            <MenuItem Header="放大" Command="{Binding ZoomInCommand}" InputGesture="Ctrl+OemPlus"/>
+            <MenuItem Header="缩小" Command="{Binding ZoomOutCommand}" InputGesture="Ctrl+OemMinus"/>
+            <MenuItem Header="重置缩放" Command="{Binding ResetZoomCommand}" InputGesture="Ctrl+0"/>
+        </MenuItem>
+        <MenuItem Header="帮助">
+            <MenuItem Header="关于 Tabic" Command="{Binding AboutCommand}"/>
+        </MenuItem>
+    </Menu>
+
+</UserControl>

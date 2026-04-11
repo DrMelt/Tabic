@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Tabic.ViewModels"
+        xmlns:components="using:Tabic.Views.Components"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        x:Class="Tabic.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Focusable="true"
+        Title="Tabic">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <!-- 窗口级别的快捷键绑定 -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+OemPlus" Command="{Binding ZoomInCommand}" />
+        <KeyBinding Gesture="Ctrl+OemMinus" Command="{Binding ZoomOutCommand}" />
+    </Window.KeyBindings>
+
+    <DockPanel>
+        <!-- 菜单栏 -->
+        <components:MenuBar DockPanel.Dock="Top" DataContext="{Binding}" />
+
+        <Border Padding="20" Background="#F0F2F5">
+            <Grid RowDefinitions="Auto,*">
+                <!-- 缩放控制条 -->
+                <components:ZoomControl Grid.Row="0" Margin="0,0,0,10" DataContext="{Binding}" />
+
+                <!-- 表格区域 -->
+                <components:TimelineTable Grid.Row="1" DataContext="{Binding}" />
+            </Grid>
+        </Border>
+    </DockPanel>
+
+</Window>
