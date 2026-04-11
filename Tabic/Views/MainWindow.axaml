@@ -9,7 +9,7 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Focusable="true"
-        Title="Tabic">
+        Title="{Binding WindowTitle}">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
@@ -17,8 +17,7 @@
 
     <!-- 窗口级别的快捷键绑定 -->
     <Window.KeyBindings>
-        <KeyBinding Gesture="Ctrl+OemPlus" Command="{Binding ZoomInCommand}" />
-        <KeyBinding Gesture="Ctrl+OemMinus" Command="{Binding ZoomOutCommand}" />
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveProjectCommand}" />
     </Window.KeyBindings>
 
     <DockPanel>
@@ -26,13 +25,8 @@
         <components:MenuBar DockPanel.Dock="Top" DataContext="{Binding}" />
 
         <Border Padding="20" Background="#F0F2F5">
-            <Grid RowDefinitions="Auto,*">
-                <!-- 缩放控制条 -->
-                <components:ZoomControl Grid.Row="0" Margin="0,0,0,10" DataContext="{Binding}" />
-
-                <!-- 表格区域 -->
-                <components:TimelineTable Grid.Row="1" DataContext="{Binding}" />
-            </Grid>
+            <!-- 表格区域 -->
+            <components:TimelineTable DataContext="{Binding}" />
         </Border>
     </DockPanel>
 

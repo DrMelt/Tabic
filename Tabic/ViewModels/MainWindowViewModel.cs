@@ -3,14 +3,27 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.Input;
 using Tabic.Models;
+using Tabic.Services;
 
 namespace Tabic.ViewModels;
+
+/// <summary>
+/// 确认对话框结果
+/// </summary>
+public enum ConfirmResult
+{
+    Yes,
+    No,
+    Cancel
+}
 
 public partial class MainWindowViewModel : ViewModelBase
 {
@@ -50,6 +63,26 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     public double ZoomStep { get; } = 0.1;
 
+    /// <summary>
+    /// 窗口标题
+    /// </summary>
+    public string WindowTitle => GetWindowTitle();
+
+    /// <summary>
+    /// 当前文档路径
+    /// </summary>
+    private string? _currentDocumentPath;
+
+    /// <summary>
+    /// 是否有未保存的更改
+    /// </summary>
+    private bool _hasUnsavedChanges = false;
+
+    /// <summary>
+    /// 文档服务
+    /// </summary>
+    private readonly DocumentService _documentService = new();
+
     // 选中项
     private Role? _selectedRole;
     public Role? SelectedRole
@@ -72,8 +105,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand NewProjectCommand { get; }
     public ICommand OpenProjectCommand { get; }
     public ICommand SaveProjectCommand { get; }
-    public ICommand ExportJsonCommand { get; }
-    public ICommand ImportJsonCommand { get; }
+
     public ICommand ExitCommand { get; }
     public ICommand AddRoleCommand { get; }
     public ICommand AddTimePointCommand { get; }
@@ -86,12 +118,11 @@ public partial class MainWindowViewModel : ViewModelBase
         ZoomInCommand = new RelayCommand(ZoomIn);
         ZoomOutCommand = new RelayCommand(ZoomOut);
         ResetZoomCommand = new RelayCommand(ResetZoom);
-        NewProjectCommand = new RelayCommand(NewProject);
-        OpenProjectCommand = new RelayCommand(OpenProject);
-        SaveProjectCommand = new RelayCommand(SaveProject);
-        ExportJsonCommand = new RelayCommand(ExportJson);
-        ImportJsonCommand = new RelayCommand(ImportJson);
-        ExitCommand = new RelayCommand(Exit);
+        NewProjectCommand = new AsyncRelayCommand(NewProject);
+        OpenProjectCommand = new AsyncRelayCommand(OpenProject);
+        SaveProjectCommand = new AsyncRelayCommand(SaveProject);
+
+        ExitCommand = new AsyncRelayCommand(Exit);
         AddRoleCommand = new RelayCommand(AddRole);
         AddTimePointCommand = new RelayCommand(AddTimePoint);
         RemoveRoleCommand = new RelayCommand(RemoveRole);
@@ -107,7 +138,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (ZoomLevel < MaxZoom)
         {
-            ZoomLevel = System.Math.Min(ZoomLevel + ZoomStep, MaxZoom);
+            ZoomLevel = Math.Min(ZoomLevel + ZoomStep, MaxZoom);
         }
     }
 
@@ -118,7 +149,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (ZoomLevel > MinZoom)
         {
-            ZoomLevel = System.Math.Max(ZoomLevel - ZoomStep, MinZoom);
+            ZoomLevel = Math.Max(ZoomLevel - ZoomStep, MinZoom);
         }
     }
 
@@ -133,102 +164,356 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>
     /// 新建项目
     /// </summary>
-    private void NewProject()
+    private async Task NewProject()
     {
+        // 检查是否有未保存的更改
+        if (_hasUnsavedChanges)
+        {
+            var result = await ShowConfirmDialogAsync(
+                "未保存的更改",
+                "当前项目有未保存的更改，是否保存？",
+                "保存",
+                "不保存",
+                "取消");
+
+            if (result == ConfirmResult.Cancel) return;
+            if (result == ConfirmResult.Yes)
+            {
+                await SaveProject();
+                if (_hasUnsavedChanges) return;
+            }
+        }
+
+        // 清空数据，创建空白项目
         Roles.Clear();
         TableRows.Clear();
+        _currentDocumentPath = null;
+        _hasUnsavedChanges = false;
+        OnPropertyChanged(nameof(WindowTitle));
     }
 
     /// <summary>
-    /// 打开项目（从JSON文件）
+    /// 打开项目
     /// </summary>
-    private void OpenProject()
+    private async Task OpenProject()
     {
-        // 简化实现，实际应该使用文件对话框
-        ImportJson();
-    }
-
-    /// <summary>
-    /// 保存项目（到JSON文件）
-    /// </summary>
-    private void SaveProject()
-    {
-        // 简化实现，实际应该使用文件对话框
-        ExportJson();
-    }
-
-    /// <summary>
-    /// 导出为JSON
-    /// </summary>
-    private void ExportJson()
-    {
-        var projectData = new ProjectData
+        var options = new FilePickerOpenOptions
         {
-            Roles = Roles.ToList(),
-            Rows = TableRows.Select(r => new RowData
-            {
-                TimePoint = r.TimePoint,
-                Cells = r.Cells.Select(c => new CellContent
+            Title = "打开项目文件",
+            AllowMultiple = false,
+            FileTypeFilter =
+            [
+                new FilePickerFileType("Tabic 项目文件")
                 {
-                    RoleId = c.RoleId,
-                    TimePointId = c.TimePointId,
-                    Content = c.Content
-                }).ToList()
-            }).ToList()
+                    Patterns = ["*.tabic"]
+                }
+            ]
         };
 
-        var json = JsonSerializer.Serialize(projectData, new JsonSerializerOptions { WriteIndented = true });
-        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Tabic_Project.json");
-        File.WriteAllText(filePath, json);
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime
+            && lifetime.MainWindow != null)
+        {
+            var result = await lifetime.MainWindow.StorageProvider.OpenFilePickerAsync(options);
+            if (result.Count > 0)
+            {
+                var filePath = result[0].Path.LocalPath;
+                try
+                {
+                    var document = await DocumentService.LoadDocumentAsync(filePath);
+
+                    // 加载角色
+                    Roles.Clear();
+                    foreach (var role in document.Roles)
+                    {
+                        Roles.Add(role);
+                    }
+
+                    // 加载时间点并重建行数据
+                    TableRows.Clear();
+                    foreach (var timePoint in document.TimePoints)
+                    {
+                        var row = new TableRowViewModel
+                        {
+                            TimePoint = timePoint,
+                            Cells = []
+                        };
+
+                        // 为该时间点的每个角色创建单元格
+                        foreach (var role in Roles)
+                        {
+                            // 查找对应的单元格内容
+                            var cellContent = document.Cells.FirstOrDefault(
+                                c => c.TimePointId == timePoint.Id && c.RoleId == role.Id);
+
+                            var cellVm = new CellViewModel
+                            {
+                                RoleId = role.Id,
+                                Content = cellContent?.Content ?? string.Empty
+                            };
+                            cellVm.ContentChanged += (s, e) => MarkAsUnsaved();
+                            row.Cells.Add(cellVm);
+                        }
+
+                        TableRows.Add(row);
+                    }
+
+                    _currentDocumentPath = filePath;
+                    _hasUnsavedChanges = false;
+                    OnPropertyChanged(nameof(WindowTitle));
+                }
+                catch (Exception ex)
+                {
+                    await ShowErrorDialogAsync("打开项目失败", ex.Message);
+                }
+            }
+        }
     }
 
     /// <summary>
-    /// 从JSON导入
+    /// 保存项目
     /// </summary>
-    private void ImportJson()
+    private async Task SaveProject()
     {
-        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Tabic_Project.json");
-        if (!File.Exists(filePath)) return;
+        var documentPath = _currentDocumentPath;
 
-        var json = File.ReadAllText(filePath);
-        var projectData = JsonSerializer.Deserialize<ProjectData>(json);
-        if (projectData == null) return;
-
-        Roles.Clear();
-        TableRows.Clear();
-
-        foreach (var role in projectData.Roles)
+        if (string.IsNullOrEmpty(documentPath))
         {
-            Roles.Add(role);
-        }
-
-        foreach (var rowData in projectData.Rows)
-        {
-            var row = new TableRowViewModel
+            // 首次保存，选择位置
+            var options = new FilePickerSaveOptions
             {
-                TimePoint = rowData.TimePoint,
-                Cells = []
+                Title = "保存项目",
+                DefaultExtension = DocumentService.Extension,
+                SuggestedFileName = "未命名项目",
+                FileTypeChoices =
+                [
+                    new FilePickerFileType("Tabic 项目文件")
+                    {
+                        Patterns = ["*.tabic"]
+                    }
+                ]
             };
 
-            foreach (var cell in rowData.Cells)
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime
+                && lifetime.MainWindow != null)
             {
-                row.Cells.Add(new CellViewModel
+                var result = await lifetime.MainWindow.StorageProvider.SaveFilePickerAsync(options);
+                if (result != null)
                 {
-                    RoleId = cell.RoleId,
-                    TimePointId = cell.TimePointId,
-                    Content = cell.Content
-                });
+                    documentPath = result.Path.LocalPath;
+                }
+                else
+                {
+                    return;
+                }
             }
-
-            TableRows.Add(row);
+            else
+            {
+                return;
+            }
         }
+
+        await SaveProjectInternalAsync(documentPath);
+    }
+
+    /// <summary>
+    /// 内部保存方法
+    /// </summary>
+    private async Task SaveProjectInternalAsync(string? documentPath = null)
+    {
+        documentPath ??= _currentDocumentPath;
+        if (string.IsNullOrEmpty(documentPath)) return;
+
+        // 收集所有非空单元格（离散存储）
+        var cells = new List<CellContent>();
+        foreach (var row in TableRows)
+        {
+            foreach (var cell in row.Cells)
+            {
+                if (!string.IsNullOrWhiteSpace(cell.Content))
+                {
+                    cells.Add(new CellContent
+                    {
+                        TimePointId = row.TimePoint.Id,
+                        RoleId = cell.RoleId,
+                        Content = cell.Content
+                    });
+                }
+            }
+        }
+
+        var document = new DocumentData
+        {
+            Title = Path.GetFileNameWithoutExtension(documentPath),
+            Roles = [.. Roles],
+            TimePoints = [.. TableRows.Select(r => r.TimePoint)],
+            Cells = cells
+        };
+
+        await DocumentService.SaveDocumentAsync(documentPath, document);
+        _currentDocumentPath = documentPath;
+        _hasUnsavedChanges = false;
+        OnPropertyChanged(nameof(WindowTitle));
+    }
+
+    /// <summary>
+    /// 标记有未保存的更改
+    /// </summary>
+    private void MarkAsUnsaved()
+    {
+        _hasUnsavedChanges = true;
+        OnPropertyChanged(nameof(WindowTitle));
+    }
+
+    /// <summary>
+    /// 获取窗口标题
+    /// </summary>
+    private string GetWindowTitle()
+    {
+        var fileName = string.IsNullOrEmpty(_currentDocumentPath)
+            ? "未命名项目"
+            : Path.GetFileNameWithoutExtension(_currentDocumentPath);
+        var unsavedMarker = _hasUnsavedChanges ? "* " : "";
+        return $"{unsavedMarker}{fileName} - Tabic";
+    }
+
+    /// <summary>
+    /// 显示错误对话框
+    /// </summary>
+    private static async Task ShowErrorDialogAsync(string title, string message)
+    {
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime
+            && lifetime.MainWindow != null)
+        {
+            var msgBox = new Window
+            {
+                Title = title,
+                Width = 400,
+                Height = 200,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                CanResize = false
+            };
+
+            var okButton = new Button
+            {
+                Content = "确定",
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                [Grid.RowProperty] = 1
+            };
+            okButton.Click += (s, e) => msgBox.Close();
+
+            msgBox.Content = new Grid
+            {
+                RowDefinitions = new RowDefinitions("*,Auto"),
+                Margin = new Thickness(20),
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = message,
+                        TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                    },
+                    okButton
+                }
+            };
+
+            await msgBox.ShowDialog(lifetime.MainWindow);
+        }
+    }
+
+    /// <summary>
+    /// 显示确认对话框
+    /// </summary>
+    private async Task<ConfirmResult> ShowConfirmDialogAsync(
+        string title,
+        string message,
+        string yesText,
+        string noText,
+        string cancelText)
+    {
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime lifetime
+            || lifetime.MainWindow == null)
+        {
+            return ConfirmResult.Cancel;
+        }
+
+        var tcs = new TaskCompletionSource<ConfirmResult>();
+
+        var msgBox = new Window
+        {
+            Title = title,
+            Width = 420,
+            Height = 180,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false
+        };
+
+        var yesButton = new Button { Content = yesText, Margin = new Thickness(5) };
+        var noButton = new Button { Content = noText, Margin = new Thickness(5) };
+        var cancelButton = new Button { Content = cancelText, Margin = new Thickness(5) };
+
+        yesButton.Click += (s, e) => { tcs.SetResult(ConfirmResult.Yes); msgBox.Close(); };
+        noButton.Click += (s, e) => { tcs.SetResult(ConfirmResult.No); msgBox.Close(); };
+        cancelButton.Click += (s, e) => { tcs.SetResult(ConfirmResult.Cancel); msgBox.Close(); };
+
+        msgBox.Content = new Grid
+        {
+            RowDefinitions = new RowDefinitions("*,Auto"),
+            Margin = new Thickness(20),
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = message,
+                    TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                },
+                new StackPanel
+                {
+                    Orientation = Avalonia.Layout.Orientation.Horizontal,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    [Grid.RowProperty] = 1,
+                    Children = { yesButton, noButton, cancelButton }
+                }
+            }
+        };
+
+        msgBox.Closed += (s, e) =>
+        {
+            if (!tcs.Task.IsCompleted)
+                tcs.SetResult(ConfirmResult.Cancel);
+        };
+
+        await msgBox.ShowDialog(lifetime.MainWindow);
+        return await tcs.Task;
     }
 
     /// <summary>
     /// 退出应用
     /// </summary>
-    private void Exit()
+    private async Task Exit()
     {
+        if (_hasUnsavedChanges)
+        {
+            var result = await ShowConfirmDialogAsync(
+                "未保存的更改",
+                "您有未保存的更改，是否保存？",
+                "保存",
+                "不保存",
+                "取消");
+
+            if (result == ConfirmResult.Cancel)
+            {
+                return;
+            }
+            else if (result == ConfirmResult.Yes)
+            {
+                await SaveProject();
+                // 如果保存失败（如用户取消对话框），不退出
+                if (_hasUnsavedChanges) return;
+            }
+        }
+
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
         {
             lifetime.Shutdown();
@@ -247,13 +532,16 @@ public partial class MainWindowViewModel : ViewModelBase
         // 为新角色在每个时间点添加单元格
         foreach (var row in TableRows)
         {
-            row.Cells.Add(new CellViewModel
+            var cellVm = new CellViewModel
             {
                 RoleId = newRole.Id,
-                TimePointId = row.TimePoint.Id,
                 Content = ""
-            });
+            };
+            cellVm.ContentChanged += (s, e) => MarkAsUnsaved();
+            row.Cells.Add(cellVm);
         }
+
+        MarkAsUnsaved();
     }
 
     /// <summary>
@@ -272,15 +560,17 @@ public partial class MainWindowViewModel : ViewModelBase
 
         foreach (var role in Roles)
         {
-            row.Cells.Add(new CellViewModel
+            var cellVm = new CellViewModel
             {
                 RoleId = role.Id,
-                TimePointId = newTimePoint.Id,
                 Content = ""
-            });
+            };
+            cellVm.ContentChanged += (s, e) => MarkAsUnsaved();
+            row.Cells.Add(cellVm);
         }
 
         TableRows.Add(row);
+        MarkAsUnsaved();
     }
 
     /// <summary>
@@ -304,6 +594,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         SelectedRole = null;
+        MarkAsUnsaved();
     }
 
     /// <summary>
@@ -315,6 +606,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         TableRows.Remove(SelectedRow);
         SelectedRow = null;
+        MarkAsUnsaved();
     }
 
     /// <summary>
@@ -323,55 +615,12 @@ public partial class MainWindowViewModel : ViewModelBase
     private void ShowAbout()
     {
         // 简化实现，实际应该显示对话框
-        System.Console.WriteLine("Tabic - 角色时间线表格工具 v1.0");
+        Console.WriteLine("Tabic - 角色时间线表格工具 v1.0");
     }
 
     private void InitializeData()
     {
-        // 初始化角色（横向表头）
-        var roles = new List<Role>
-        {
-            new() { Id = "role1", Name = "主角" },
-            new() { Id = "role2", Name = "配角A" },
-            new() { Id = "role3", Name = "配角B" },
-            new() { Id = "role4", Name = "反派" },
-        };
-
-        foreach (var role in roles)
-        {
-            Roles.Add(role);
-        }
-
-        // 初始化时间点（纵向表头）
-        var timePoints = new List<TimePoint>
-        {
-            new() { Id = "t1", Name = "第一章" },
-            new() { Id = "t2", Name = "第二章" },
-            new() { Id = "t3", Name = "第三章" },
-            new() { Id = "t4", Name = "第四章" },
-            new() { Id = "t5", Name = "第五章" },
-        };
-
-        // 初始化表格数据
-        foreach (var timePoint in timePoints)
-        {
-            var row = new TableRowViewModel
-            {
-                TimePoint = timePoint,
-                Cells = []
-            };
-
-            foreach (var role in roles)
-            {
-                row.Cells.Add(new CellViewModel
-                {
-                    RoleId = role.Id,
-                    TimePointId = timePoint.Id,
-                    Content = $"{role.Name}在{timePoint.Name}的内容"
-                });
-            }
-
-            TableRows.Add(row);
-        }
+        // 应用启动时显示空项目，不填充默认数据
+        // 用户可以通过菜单添加角色和时间点
     }
 }

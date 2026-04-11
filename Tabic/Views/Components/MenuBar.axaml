@@ -10,9 +10,6 @@
             <MenuItem Header="打开项目" Command="{Binding OpenProjectCommand}" InputGesture="Ctrl+O"/>
             <MenuItem Header="保存项目" Command="{Binding SaveProjectCommand}" InputGesture="Ctrl+S"/>
             <Separator/>
-            <MenuItem Header="导出为 JSON" Command="{Binding ExportJsonCommand}"/>
-            <MenuItem Header="从 JSON 导入" Command="{Binding ImportJsonCommand}"/>
-            <Separator/>
             <MenuItem Header="退出" Command="{Binding ExitCommand}"/>
         </MenuItem>
         <MenuItem Header="编辑">
@@ -21,11 +18,6 @@
             <Separator/>
             <MenuItem Header="删除选中角色" Command="{Binding RemoveRoleCommand}"/>
             <MenuItem Header="删除选中时间点" Command="{Binding RemoveTimePointCommand}"/>
-        </MenuItem>
-        <MenuItem Header="视图">
-            <MenuItem Header="放大" Command="{Binding ZoomInCommand}" InputGesture="Ctrl+OemPlus"/>
-            <MenuItem Header="缩小" Command="{Binding ZoomOutCommand}" InputGesture="Ctrl+OemMinus"/>
-            <MenuItem Header="重置缩放" Command="{Binding ResetZoomCommand}" InputGesture="Ctrl+0"/>
         </MenuItem>
         <MenuItem Header="帮助">
             <MenuItem Header="关于 Tabic" Command="{Binding AboutCommand}"/>
