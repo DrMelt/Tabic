@@ -1,4 +1,4 @@
-namespace Tabic.Models;
+namespace Tabic.Core.Models;
 
 /// <summary>
 /// 单元格内容模型（离散存储）

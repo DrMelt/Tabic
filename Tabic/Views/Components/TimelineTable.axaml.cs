@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
 using System.Collections;

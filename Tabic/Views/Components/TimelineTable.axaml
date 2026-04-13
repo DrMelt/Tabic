@@ -1,10 +1,10 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Tabic.ViewModels"
-             xmlns:models="using:Tabic.Models"
+             xmlns:models="using:Tabic.Core.Models"
              xmlns:components="using:Tabic.Views.Components"
              x:Class="Tabic.Views.Components.TimelineTable"
-             x:DataType="vm:MainWindowViewModel"
+             x:DataType="vm:TimelineTableViewModel"
              HorizontalAlignment="Stretch"
              VerticalAlignment="Stretch">
 

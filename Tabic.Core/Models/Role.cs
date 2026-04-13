@@ -1,9 +1,9 @@
-namespace Tabic.Models;
+namespace Tabic.Core.Models;
 
 /// <summary>
-/// 时间点模型
+/// 角色模型
 /// </summary>
-public class TimePoint
+public class Role
 {
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

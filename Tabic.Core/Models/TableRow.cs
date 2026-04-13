@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace Tabic.Models;
+namespace Tabic.Core.Models;
 
 /// <summary>
 /// 表格行模型，包含时间点信息和该行所有单元格内容

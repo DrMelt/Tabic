@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using Tabic.Models;
+using Tabic.Core.Models;
 
-namespace Tabic.ViewModels;
+namespace Tabic.Core.Data;
 
 /// <summary>
 /// 项目数据（用于序列化）

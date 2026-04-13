@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Tabic.Models;
+using Tabic.Core.Models;
 
 namespace Tabic.ViewModels;
 

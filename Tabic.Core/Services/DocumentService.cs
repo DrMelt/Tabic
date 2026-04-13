@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Tabic.Models;
+using Tabic.Core.Models;
 
-namespace Tabic.Services;
+namespace Tabic.Core.Services;
 
 /// <summary>
 /// 文档存储服务

@@ -26,7 +26,7 @@
 
         <Border Padding="20" Background="#F0F2F5">
             <!-- 表格区域 -->
-            <components:TimelineTable DataContext="{Binding}" />
+            <components:TimelineTable DataContext="{Binding TimelineTable}" />
         </Border>
     </DockPanel>
 
