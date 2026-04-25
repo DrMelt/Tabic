@@ -12,6 +12,7 @@
 
     <Application.Styles>
         <FluentTheme />
-        <sukiUi:SukiTheme Locale="zh-CN" ThemeColor="Blue"  />
+        <StyleInclude Source="avares://SukiUI.Dock/Index.axaml" />
+        <sukiUi:SukiTheme Locale="zh-CN" ThemeColor="Orange"/>
     </Application.Styles>
 </Application>

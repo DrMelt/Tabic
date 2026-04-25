@@ -27,10 +27,31 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     public ObservableCollection<TableRowViewModel> TableRows => TimelineTable.TableRows;
 
+    private double _zoomLevel = 1.0;
+
     /// <summary>
     /// 缩放级别
     /// </summary>
-    public double ZoomLevel => TimelineTable.ZoomLevel;
+    public double ZoomLevel
+    {
+        get => _zoomLevel;
+        set => SetProperty(ref _zoomLevel, value);
+    }
+
+    /// <summary>
+    /// 最小缩放级别
+    /// </summary>
+    public double MinZoom { get; } = 0.5;
+
+    /// <summary>
+    /// 最大缩放级别
+    /// </summary>
+    public double MaxZoom { get; } = 2.0;
+
+    /// <summary>
+    /// 缩放步长
+    /// </summary>
+    public double ZoomStep { get; } = 0.1;
 
     /// <summary>
     /// 窗口标题
@@ -110,7 +131,10 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private void ZoomIn()
     {
-        TimelineTable.ZoomIn();
+        if (ZoomLevel < MaxZoom)
+        {
+            ZoomLevel = System.Math.Min(ZoomLevel + ZoomStep, MaxZoom);
+        }
     }
 
     /// <summary>
@@ -118,7 +142,10 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private void ZoomOut()
     {
-        TimelineTable.ZoomOut();
+        if (ZoomLevel > MinZoom)
+        {
+            ZoomLevel = System.Math.Max(ZoomLevel - ZoomStep, MinZoom);
+        }
     }
 
     /// <summary>
@@ -126,7 +153,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private void ResetZoom()
     {
-        TimelineTable.ResetZoom();
+        ZoomLevel = 1.0;
     }
 
     /// <summary>

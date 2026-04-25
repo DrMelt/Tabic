@@ -28,6 +28,6 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="SukiUI" />
-    <PackageReference Include="Tmds.DBus.Protocol" />
+    <PackageReference Include="SukiUI.Dock" />
   </ItemGroup>
 </Project>

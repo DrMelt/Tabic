@@ -76,6 +76,37 @@ public class TimelineData
     }
 
     /// <summary>
+    /// 在指定时间点上方插入新时间点
+    /// </summary>
+    public TimePoint InsertTimePointAbove(TimePoint timePoint)
+    {
+        var index = TimePoints.IndexOf(timePoint);
+        if (index < 0) index = 0;
+
+        var newId = Guid.NewGuid().ToString("N")[..8];
+        var newTimePoint = new TimePoint { Id = newId, Name = $"新时间点{TimePoints.Count + 1}" };
+        TimePoints.Insert(index, newTimePoint);
+        OnChanged();
+        return newTimePoint;
+    }
+
+    /// <summary>
+    /// 在指定时间点下方插入新时间点
+    /// </summary>
+    public TimePoint InsertTimePointBelow(TimePoint timePoint)
+    {
+        var index = TimePoints.IndexOf(timePoint);
+        if (index < 0) index = TimePoints.Count;
+        else index++;
+
+        var newId = Guid.NewGuid().ToString("N")[..8];
+        var newTimePoint = new TimePoint { Id = newId, Name = $"新时间点{TimePoints.Count + 1}" };
+        TimePoints.Insert(index, newTimePoint);
+        OnChanged();
+        return newTimePoint;
+    }
+
+    /// <summary>
     /// 获取指定角色和时间点的单元格内容
     /// </summary>
     public string GetCellContent(string timePointId, string roleId)

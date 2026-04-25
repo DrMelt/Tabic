@@ -30,32 +30,6 @@ public partial class TimelineTableViewModel : ViewModelBase
     /// </summary>
     public event EventHandler? DataChanged;
 
-    private double _zoomLevel = 1.0;
-
-    /// <summary>
-    /// 缩放级别
-    /// </summary>
-    public double ZoomLevel
-    {
-        get => _zoomLevel;
-        set => SetProperty(ref _zoomLevel, value);
-    }
-
-    /// <summary>
-    /// 最小缩放级别
-    /// </summary>
-    public double MinZoom { get; } = 0.5;
-
-    /// <summary>
-    /// 最大缩放级别
-    /// </summary>
-    public double MaxZoom { get; } = 2.0;
-
-    /// <summary>
-    /// 缩放步长
-    /// </summary>
-    public double ZoomStep { get; } = 0.1;
-
     // 选中项
     private Role? _selectedRole;
     public Role? SelectedRole
@@ -75,6 +49,8 @@ public partial class TimelineTableViewModel : ViewModelBase
     public ICommand AddTimePointCommand { get; }
     public ICommand RemoveRoleCommand { get; }
     public ICommand RemoveTimePointCommand { get; }
+    public ICommand InsertTimePointBelowCommand { get; }
+    public ICommand InsertTimePointAboveCommand { get; }
 
     public TimelineTableViewModel(TimelineData data)
     {
@@ -85,27 +61,8 @@ public partial class TimelineTableViewModel : ViewModelBase
         AddTimePointCommand = new RelayCommand(AddTimePoint);
         RemoveRoleCommand = new RelayCommand(RemoveRole);
         RemoveTimePointCommand = new RelayCommand(RemoveTimePoint);
-    }
-
-    public void ZoomIn()
-    {
-        if (ZoomLevel < MaxZoom)
-        {
-            ZoomLevel = System.Math.Min(ZoomLevel + ZoomStep, MaxZoom);
-        }
-    }
-
-    public void ZoomOut()
-    {
-        if (ZoomLevel > MinZoom)
-        {
-            ZoomLevel = System.Math.Max(ZoomLevel - ZoomStep, MinZoom);
-        }
-    }
-
-    public void ResetZoom()
-    {
-        ZoomLevel = 1.0;
+        InsertTimePointAboveCommand = new RelayCommand(InsertTimePointAbove);
+        InsertTimePointBelowCommand = new RelayCommand(InsertTimePointBelow);
     }
 
     private void AddRole()
@@ -187,6 +144,56 @@ public partial class TimelineTableViewModel : ViewModelBase
         {
             SelectedRow = null;
         }
+    }
+
+    private void InsertTimePointAbove()
+    {
+        if (SelectedRow == null) return;
+        var referenceRow = SelectedRow;
+
+        var newTimePoint = Data.InsertTimePointAbove(referenceRow.TimePoint);
+        var newRow = CreateRowViewModel(newTimePoint);
+
+        var index = TableRows.IndexOf(referenceRow);
+        if (index < 0) index = 0;
+        TableRows.Insert(index, newRow);
+    }
+
+    private void InsertTimePointBelow()
+    {
+        if (SelectedRow == null) return;
+        var referenceRow = SelectedRow;
+
+        var newTimePoint = Data.InsertTimePointBelow(referenceRow.TimePoint);
+        var newRow = CreateRowViewModel(newTimePoint);
+
+        var index = TableRows.IndexOf(referenceRow);
+        if (index < 0) index = TableRows.Count;
+        else index++;
+        TableRows.Insert(index, newRow);
+    }
+
+    private TableRowViewModel CreateRowViewModel(TimePoint timePoint)
+    {
+        var row = new TableRowViewModel
+        {
+            TimePoint = timePoint,
+            Cells = []
+        };
+
+        foreach (var role in Roles)
+        {
+            var content = Data.GetCellContent(timePoint.Id, role.Id);
+            var cellVm = new CellViewModel
+            {
+                RoleId = role.Id,
+                Content = content
+            };
+            AttachCellEvents(cellVm, timePoint.Id);
+            row.Cells.Add(cellVm);
+        }
+
+        return row;
     }
 
     public void Clear()

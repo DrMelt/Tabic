@@ -5,7 +5,16 @@
              x:DataType="vm:TableRowViewModel">
 
     <Border Background="Transparent"
-            Padding="12,8">
+            Padding="12,8"
+            PointerPressed="OnPointerPressed">
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="在上方添加时间点"
+                          Command="{Binding $parent[ItemsControl].((vm:TimelineTableViewModel)DataContext).InsertTimePointAboveCommand}" />
+                <MenuItem Header="在下方添加时间点"
+                          Command="{Binding $parent[ItemsControl].((vm:TimelineTableViewModel)DataContext).InsertTimePointBelowCommand}" />
+            </ContextMenu>
+        </Border.ContextMenu>
         <TextBlock Text="{Binding TimePoint.Name}"
                    FontWeight="SemiBold"
                    VerticalAlignment="Center"

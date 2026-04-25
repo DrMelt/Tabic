@@ -6,6 +6,7 @@
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:sukiUi="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+                   xmlns:dock="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
                    mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
                    x:Class="Tabic.Views.MainWindow"
                    x:DataType="vm:MainWindowViewModel"
@@ -30,8 +31,54 @@
         <menuBar:MenuBar DockPanel.Dock="Top" DataContext="{Binding}" />
 
         <Border Padding="20" Background="#F0F2F5">
-            <!-- 表格区域 -->
-            <timelineTable:TimelineTable DataContext="{Binding TimelineTable}" />
+            <LayoutTransformControl HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch">
+                <LayoutTransformControl.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}"/>
+                </LayoutTransformControl.LayoutTransform>
+
+                <!-- Dock 布局区域 -->
+                <DockControl x:Name="Dock" InitializeLayout="True" InitializeFactory="True" >
+                    <DockControl.Factory>
+                        <Factory />
+                    </DockControl.Factory>
+
+                    <RootDock x:Name="Root" Id="Root" IsCollapsable="False" DefaultDockable="{Binding #MainLayout}">
+                        <ProportionalDock x:Name="MainLayout" Id="MainLayout" Orientation="Horizontal">
+                            <!-- 左侧工具面板 -->
+                            <ToolDock x:Name="LeftPane" Id="LeftPane" Proportion="0.2" Alignment="Left" >
+                                <Tool x:Name="Navigator" Id="Navigator" Title="导航" x:DataType="Tool" CanFloat="False" CanPin="False">
+                                    <TextBlock Text="导航面板" Margin="15" />
+                                </Tool>
+                            </ToolDock>
+
+                            <ProportionalDockSplitter x:Name="LeftSplitter" Id="LeftSplitter" />
+
+                            <!-- 中间主内容区 -->
+                            <ProportionalDock x:Name="CenterPane" Id="CenterPane" Orientation="Vertical" Proportion="0.8">
+                                <!-- 文档区域 -->
+                                <ProportionalDock x:Name="TopPane" Id="TopPane" Orientation="Horizontal" Proportion="0.7">
+                                    <DocumentDock x:Name="DocumentsPane" Id="DocumentsPane" ActiveDockable="Document1" IsCollapsable="False">
+                                        <Document x:Name="Document1" Id="Document1" Title="时间线表格" x:DataType="Document" CanClose="False" CanFloat="False">
+                                            <timelineTable:TimelineTable />
+                                        </Document>
+                                    </DocumentDock>
+                                </ProportionalDock>
+
+                                <ProportionalDockSplitter x:Name="BottomSplitter" Id="BottomSplitter" />
+
+                                <!-- 底部工具面板 -->
+                                <ToolDock x:Name="BottomPane" Id="BottomPane" Proportion="0.3" Alignment="Bottom" >
+                                    <Tool x:Name="Properties" Id="Properties" Title="属性" x:DataType="Tool" CanFloat="False" CanPin="False" >
+                                        <TextBlock Text="属性面板" Margin="15" />
+                                    </Tool>
+                                </ToolDock>
+
+                            </ProportionalDock>
+                        </ProportionalDock>
+                    </RootDock>
+                </DockControl>
+            </LayoutTransformControl>
         </Border>
     </DockPanel>
 
