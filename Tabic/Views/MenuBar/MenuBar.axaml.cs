@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace Tabic.Views.Components;
+namespace Tabic.Views.MenuBar;
 
 public partial class MenuBar : UserControl
 {

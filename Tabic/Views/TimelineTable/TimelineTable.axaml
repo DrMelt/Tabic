@@ -2,8 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Tabic.ViewModels"
              xmlns:models="using:Tabic.Core.Models"
-             xmlns:components="using:Tabic.Views.Components"
-             x:Class="Tabic.Views.Components.TimelineTable"
+             x:Class="Tabic.Views.TimelineTable.TimelineTable"
              x:DataType="vm:TimelineTableViewModel"
              HorizontalAlignment="Stretch"
              VerticalAlignment="Stretch">

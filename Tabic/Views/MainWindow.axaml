@@ -1,7 +1,8 @@
 <sukiUi:SukiWindow xmlns="https://github.com/avaloniaui"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:vm="using:Tabic.ViewModels"
-                   xmlns:components="using:Tabic.Views.Components"
+                   xmlns:menuBar="using:Tabic.Views.MenuBar"
+                   xmlns:timelineTable="using:Tabic.Views.TimelineTable"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:sukiUi="clr-namespace:SukiUI.Controls;assembly=SukiUI"
@@ -27,11 +28,11 @@
 
     <DockPanel>
         <!-- 菜单栏 -->
-        <components:MenuBar DockPanel.Dock="Top" DataContext="{Binding}" />
+        <menuBar:MenuBar DockPanel.Dock="Top" DataContext="{Binding}" />
 
         <Border Padding="20" Background="#F0F2F5">
             <!-- 表格区域 -->
-            <components:TimelineTable DataContext="{Binding TimelineTable}" />
+            <timelineTable:TimelineTable DataContext="{Binding TimelineTable}" />
         </Border>
     </DockPanel>
 

@@ -7,7 +7,7 @@ using System.Collections;
 using System.Linq;
 
 
-namespace Tabic.Views.Components;
+namespace Tabic.Views.TimelineTable;
 
 public partial class TimelineTable : UserControl
 {

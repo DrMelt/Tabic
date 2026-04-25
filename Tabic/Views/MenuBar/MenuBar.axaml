@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Tabic.ViewModels"
-             x:Class="Tabic.Views.Components.MenuBar"
+             x:Class="Tabic.Views.MenuBar.MenuBar"
              x:DataType="vm:MainWindowViewModel">
 
     <Menu Background="#F8F9FA" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
