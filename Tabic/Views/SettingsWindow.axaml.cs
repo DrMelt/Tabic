@@ -1,9 +1,8 @@
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using SukiUI.Controls;
 
 namespace Tabic.Views;
 
-public partial class SettingsWindow : Window
+public partial class SettingsWindow : SukiWindow
 {
     public SettingsWindow()
     {

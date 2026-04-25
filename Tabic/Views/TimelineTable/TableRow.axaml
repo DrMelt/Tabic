@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Tabic.ViewModels"
+             xmlns:local="using:Tabic.Views.TimelineTable"
+             x:Class="Tabic.Views.TimelineTable.TableRow"
+             x:DataType="vm:TableRowViewModel">
+
+    <ItemsControl ItemsSource="{Binding Cells}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="vm:CellViewModel">
+                <local:TableCell />
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+</UserControl>

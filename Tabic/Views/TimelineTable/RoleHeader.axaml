@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="using:Tabic.Core.Models"
+             x:Class="Tabic.Views.TimelineTable.RoleHeader"
+             x:DataType="models:Role">
+
+    <Border Background="Transparent"
+            Padding="12,8"
+            Width="300">
+        <TextBlock Text="{Binding Name}"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   Foreground="White"
+                   FontSize="14"/>
+    </Border>
+
+</UserControl>

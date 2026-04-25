@@ -1,14 +1,14 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:Tabic.ViewModels"
-        x:Class="Tabic.Views.SettingsWindow"
-        x:DataType="vm:SettingsWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="设置"
-        Width="500"
-        Height="460"
-        WindowStartupLocation="CenterOwner"
-        CanResize="False">
+<sukiUi:SukiWindow xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:vm="using:Tabic.ViewModels"
+                   xmlns:sukiUi="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+                   x:Class="Tabic.Views.SettingsWindow"
+                   x:DataType="vm:SettingsWindowViewModel"
+                   Title="设置"
+                   Width="500"
+                   Height="460"
+                   WindowStartupLocation="CenterOwner"
+                   CanResize="False">
 
     <Design.DataContext>
         <vm:SettingsWindowViewModel/>
@@ -116,4 +116,4 @@
         </StackPanel>
     </Grid>
 
-</Window>
+</sukiUi:SukiWindow>

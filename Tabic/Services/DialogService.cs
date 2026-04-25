@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Layout;
+using SukiUI.Controls;
 
 namespace Tabic.Services;
 
@@ -29,7 +30,7 @@ public class DialogService
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime
             && lifetime.MainWindow != null)
         {
-            var msgBox = new Window
+            var msgBox = new SukiWindow
             {
                 Title = title,
                 Width = 400,

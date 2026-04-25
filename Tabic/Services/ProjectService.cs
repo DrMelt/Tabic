@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Controls.ApplicationLifetimes;
+using SukiUI.Controls;
 using Tabic.Core.Models;
 using Tabic.Core.Services;
 
@@ -187,7 +188,7 @@ public class ProjectService
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime
             && lifetime.MainWindow != null)
         {
-            var msgBox = new Window
+            var msgBox = new SukiWindow
             {
                 Title = title,
                 Width = 400,

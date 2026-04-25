@@ -9,7 +9,6 @@
                    mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
                    x:Class="Tabic.Views.MainWindow"
                    x:DataType="vm:MainWindowViewModel"
-                   Icon="/Assets/avalonia-logo.ico"
                    Focusable="true"
                    Title="{Binding WindowTitle}">
 
