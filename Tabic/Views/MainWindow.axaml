@@ -1,15 +1,16 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:Tabic.ViewModels"
-        xmlns:components="using:Tabic.Views.Components"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
-        x:Class="Tabic.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Focusable="true"
-        Title="{Binding WindowTitle}">
+<sukiUi:SukiWindow xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:vm="using:Tabic.ViewModels"
+                   xmlns:components="using:Tabic.Views.Components"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:sukiUi="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+                   mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+                   x:Class="Tabic.Views.MainWindow"
+                   x:DataType="vm:MainWindowViewModel"
+                   Icon="/Assets/avalonia-logo.ico"
+                   Focusable="true"
+                   Title="{Binding WindowTitle}">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
@@ -18,6 +19,10 @@
     <!-- 窗口级别的快捷键绑定 -->
     <Window.KeyBindings>
         <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveProjectCommand}" />
+
+        <KeyBinding Gesture="Ctrl+OemPlus" Command="{Binding ZoomInCommand}" />
+        <KeyBinding Gesture="Ctrl+OemMinus" Command="{Binding ZoomOutCommand}" />
+        <KeyBinding Gesture="Ctrl+0" Command="{Binding ResetZoomCommand}" />
     </Window.KeyBindings>
 
     <DockPanel>
@@ -30,4 +35,4 @@
         </Border>
     </DockPanel>
 
-</Window>
+</sukiUi:SukiWindow>

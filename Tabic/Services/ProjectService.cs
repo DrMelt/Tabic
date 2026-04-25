@@ -100,7 +100,7 @@ public class ProjectService
                 var filePath = result[0].Path.LocalPath;
                 try
                 {
-                    var document = await DocumentService.LoadDocumentAsync(filePath);
+                    var document = await DocumentSaveService.LoadDocumentAsync(filePath);
                     _currentDocumentPath = filePath;
                     _hasUnsavedChanges = false;
                     DocumentPathChanged?.Invoke(this, EventArgs.Empty);
@@ -133,7 +133,7 @@ public class ProjectService
             }
         }
 
-        await DocumentService.SaveDocumentAsync(documentPath, document);
+        await DocumentSaveService.SaveDocumentAsync(documentPath, document);
         _currentDocumentPath = documentPath;
         _hasUnsavedChanges = false;
         DocumentPathChanged?.Invoke(this, EventArgs.Empty);
@@ -149,7 +149,7 @@ public class ProjectService
         var options = new FilePickerSaveOptions
         {
             Title = "保存项目",
-            DefaultExtension = DocumentService.Extension,
+            DefaultExtension = DocumentSaveService.Extension,
             SuggestedFileName = "未命名项目",
             FileTypeChoices =
             [

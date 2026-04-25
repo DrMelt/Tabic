@@ -47,6 +47,11 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private readonly DialogService _dialogService;
 
+    /// <summary>
+    /// 设置服务
+    /// </summary>
+    private readonly SettingsService _settingsService;
+
     // 选中项
     public Role? SelectedRole
     {
@@ -74,11 +79,13 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand RemoveRoleCommand => TimelineTable.RemoveRoleCommand;
     public ICommand RemoveTimePointCommand => TimelineTable.RemoveTimePointCommand;
     public ICommand AboutCommand { get; }
+    public ICommand OpenSettingsCommand { get; }
 
-    public MainWindowViewModel(DialogService dialogService, ProjectService projectService, TimelineTableViewModel timelineTable)
+    public MainWindowViewModel(DialogService dialogService, ProjectService projectService, SettingsService settingsService, TimelineTableViewModel timelineTable)
     {
         _dialogService = dialogService;
         _projectService = projectService;
+        _settingsService = settingsService;
         TimelineTable = timelineTable;
 
         ZoomInCommand = new RelayCommand(ZoomIn);
@@ -90,6 +97,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         ExitCommand = new AsyncRelayCommand(Exit);
         AboutCommand = new RelayCommand(ShowAbout);
+        OpenSettingsCommand = new RelayCommand(OpenSettings);
 
         _projectService.UnsavedStateChanged += (s, e) => OnPropertyChanged(nameof(WindowTitle));
         _projectService.DocumentPathChanged += (s, e) => OnPropertyChanged(nameof(WindowTitle));
@@ -233,6 +241,29 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         // 简化实现，实际应该显示对话框
         Console.WriteLine("Tabic - v1.0");
+    }
+
+    /// <summary>
+    /// 打开设置窗口
+    /// </summary>
+    private void OpenSettings()
+    {
+        var settingsWindow = new Views.SettingsWindow
+        {
+            DataContext = new SettingsWindowViewModel(_settingsService)
+        };
+
+        if (settingsWindow.DataContext is SettingsWindowViewModel vm)
+        {
+            vm.SaveCompleted += (s, e) => settingsWindow.Close();
+            vm.Cancelled += (s, e) => settingsWindow.Close();
+        }
+
+        if (Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime lifetime
+            && lifetime.MainWindow != null)
+        {
+            settingsWindow.ShowDialog(lifetime.MainWindow);
+        }
     }
 
 }

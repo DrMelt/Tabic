@@ -19,6 +19,9 @@
             <MenuItem Header="删除选中角色" Command="{Binding RemoveRoleCommand}"/>
             <MenuItem Header="删除选中时间点" Command="{Binding RemoveTimePointCommand}"/>
         </MenuItem>
+        <MenuItem Header="工具">
+            <MenuItem Header="设置" Command="{Binding OpenSettingsCommand}"/>
+        </MenuItem>
         <MenuItem Header="帮助">
             <MenuItem Header="关于 Tabic" Command="{Binding AboutCommand}"/>
         </MenuItem>

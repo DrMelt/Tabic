@@ -21,7 +21,7 @@
             <LayoutTransformControl.LayoutTransform>
                 <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}"/>
             </LayoutTransformControl.LayoutTransform>
-            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,*" x:Name="MainGrid"
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*" x:Name="MainGrid"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   Grid.IsSharedSizeScope="True">
@@ -143,7 +143,7 @@
                                                              HorizontalAlignment="Center"
                                                              FontSize="12"
                                                              Foreground="#333333"
-                                                             PlaceholderText="输入内容..."
+                                                             Watermark="输入内容..."
                                                              AcceptsReturn="True"
                                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                                              ScrollViewer.VerticalScrollBarVisibility="Disabled"/>

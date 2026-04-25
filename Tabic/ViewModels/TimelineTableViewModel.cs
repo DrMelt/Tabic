@@ -196,7 +196,6 @@ public partial class TimelineTableViewModel : ViewModelBase
         TableRows.Clear();
         SelectedRole = null;
         SelectedRow = null;
-        ZoomLevel = 1.0;
     }
 
     public void LoadFromDocument(DocumentData document)
@@ -235,7 +234,6 @@ public partial class TimelineTableViewModel : ViewModelBase
 
         SelectedRole = null;
         SelectedRow = null;
-        ZoomLevel = 1.0;
     }
 
     private void AttachCellEvents(CellViewModel cellVm, string timePointId)

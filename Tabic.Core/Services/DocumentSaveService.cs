@@ -7,7 +7,7 @@ namespace Tabic.Core.Services;
 /// <summary>
 /// 文档存储服务
 /// </summary>
-public class DocumentService
+public class DocumentSaveService
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {

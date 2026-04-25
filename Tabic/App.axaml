@@ -2,14 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Tabic.App"
              xmlns:local="using:Tabic"
+             xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
-  
+
     <Application.Styles>
         <FluentTheme />
+        <sukiUi:SukiTheme Locale="zh-CN" ThemeColor="Blue"  />
     </Application.Styles>
 </Application>

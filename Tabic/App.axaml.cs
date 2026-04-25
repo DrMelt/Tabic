@@ -31,6 +31,7 @@ public partial class App : Application
     {
         services.AddSingleton<DialogService>();
         services.AddSingleton<ProjectService>();
+        services.AddSingleton<SettingsService>();
         services.AddSingleton<TimelineData>();
         services.AddSingleton<TimelineTableViewModel>();
         services.AddSingleton<MainWindowViewModel>();
@@ -40,6 +41,10 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            // 启动时加载设置
+            var settingsService = Services.GetRequiredService<SettingsService>();
+            settingsService.LoadSettings();
+
             desktop.MainWindow = new MainWindow
             {
                 DataContext = Services.GetRequiredService<MainWindowViewModel>(),
