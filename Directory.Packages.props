@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <AvaloniaVersion>11.3.14</AvaloniaVersion>
+    <AvaloniaVersion>12.1.0</AvaloniaVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Avalonia" Version="$(AvaloniaVersion)" />
@@ -11,7 +11,7 @@
     <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
-    <PackageVersion Include="SukiUI" Version="6.0.3" />
-    <PackageVersion Include="SukiUI.Dock" Version="6.0.3" />
+    <PackageVersion Include="SukiUI" Version="7.0.1" />
+    <PackageVersion Include="SukiUI.Dock" Version="7.0.1" />
   </ItemGroup>
 </Project>

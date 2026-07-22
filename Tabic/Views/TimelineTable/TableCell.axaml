@@ -22,7 +22,7 @@
                      HorizontalAlignment="Center"
                      FontSize="14"
                      Foreground="#333333"
-                     Watermark="输入内容..."
+                     PlaceholderText="输入内容..."
                      AcceptsReturn="True"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
