@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.Input;
+using SukiUI.Dialogs;
 using Tabic.Core.Models;
 using Tabic.Services;
 
@@ -12,6 +13,8 @@ namespace Tabic.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    public ISukiDialogManager DialogManager { get; } = new SukiDialogManager();
+
     /// <summary>
     /// 表格视图模型
     /// </summary>
@@ -133,7 +136,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (ZoomLevel < MaxZoom)
         {
-            ZoomLevel = System.Math.Min(ZoomLevel + ZoomStep, MaxZoom);
+            ZoomLevel = Math.Min(ZoomLevel + ZoomStep, MaxZoom);
         }
     }
 
@@ -144,7 +147,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (ZoomLevel > MinZoom)
         {
-            ZoomLevel = System.Math.Max(ZoomLevel - ZoomStep, MinZoom);
+            ZoomLevel = Math.Max(ZoomLevel - ZoomStep, MinZoom);
         }
     }
 
@@ -286,7 +289,7 @@ public partial class MainWindowViewModel : ViewModelBase
             vm.Cancelled += (s, e) => settingsWindow.Close();
         }
 
-        if (Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime lifetime
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime
             && lifetime.MainWindow != null)
         {
             settingsWindow.ShowDialog(lifetime.MainWindow);

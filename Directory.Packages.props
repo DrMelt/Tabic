@@ -11,6 +11,7 @@
     <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
+    <PackageVersion Include="ModelContextProtocol" Version="1.4.1" />
     <PackageVersion Include="SukiUI" Version="7.0.1" />
     <PackageVersion Include="SukiUI.Dock" Version="7.0.1" />
   </ItemGroup>
