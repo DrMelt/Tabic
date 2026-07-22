@@ -61,22 +61,11 @@
                             <!-- 中间主内容区 -->
                             <ProportionalDock x:Name="CenterPane" Id="CenterPane" Orientation="Vertical" Proportion="0.8" MinHeight="150" MinWidth="150">
                                 <!-- 文档区域 -->
-                                <ProportionalDock x:Name="TopPane" Id="TopPane" Orientation="Horizontal" Proportion="0.7" MinHeight="150" MinWidth="150">
-                                    <DocumentDock x:Name="DocumentsPane" Id="DocumentsPane" ActiveDockable="Document1" IsCollapsable="False">
-                                        <Document x:Name="Document1" Id="Document1" Title="时间线表格" x:DataType="Document" CanClose="False" CanFloat="False">
-                                            <timelineTable:TimelineTable />
-                                        </Document>
-                                    </DocumentDock>
-                                </ProportionalDock>
-
-                                <ProportionalDockSplitter x:Name="BottomSplitter" Id="BottomSplitter" />
-
-                                <!-- 底部工具面板 -->
-                                <ToolDock x:Name="BottomPane" Id="BottomPane" Proportion="0.3" Alignment="Bottom" MinHeight="150" MinWidth="150">
-                                    <Tool x:Name="Properties" Id="Properties" Title="属性" x:DataType="Tool" CanFloat="False" CanPin="False" >
-                                        <TextBlock Text="属性面板" Margin="15" />
-                                    </Tool>
-                                </ToolDock>
+                                <DocumentDock x:Name="DocumentsPane" Id="DocumentsPane" ActiveDockable="Document1" IsCollapsable="False">
+                                    <Document x:Name="Document1" Id="Document1" Title="时间线表格" x:DataType="Document" CanClose="False" CanFloat="False">
+                                        <timelineTable:TimelineTable />
+                                    </Document>
+                                </DocumentDock>
 
                             </ProportionalDock>
                         </ProportionalDock>
