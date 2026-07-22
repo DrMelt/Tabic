@@ -10,7 +10,8 @@
                    x:Class="Tabic.Views.MainWindow"
                    x:DataType="vm:MainWindowViewModel"
                    Focusable="true"
-                   Title="{Binding WindowTitle}">
+                   Title="{Binding WindowTitle}"
+                   BackgroundAnimationEnabled="False">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
